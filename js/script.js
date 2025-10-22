@@ -1,5 +1,5 @@
 const URL_COINS = "https://api.coinlore.net/api/tickers/";
-const URL_EXCHANGES = "https://api.coinlore.net/api/exchanges/";
+const URL_EXCHANGES = "https://api.coinlore.net/api/coin/markets/?id=90";
 
 let coinsData = [];
 let exchangesData = [];
@@ -25,6 +25,7 @@ async function loadData() {
 
     //  Obj numerado lo convertimos a array
     const rawEx = exchangesRes.data;
+    console.log(rawEx)
     if (Array.isArray(rawEx)) {
       exchangesData = rawEx;
     } else if (rawEx && typeof rawEx === "object") {
@@ -74,7 +75,7 @@ function renderTables(coins, exchanges) {
       <td>${c.rank ?? i + 1}</td>
       <td>${c.name}</td>
       <td>${c.symbol}</td>
-      <td>${c.symbol}</td>
+      <td>${c.price_btc}</td>
       <td>${formatUSD(c.price_usd)}</td>
     </tr>
   `).join("");
@@ -83,17 +84,19 @@ function renderTables(coins, exchanges) {
     .map(e => ({
       name: e.name,
       pairs: Array.isArray(e.pairs) ? e.pairs.length : "-",
-      volume_usd: Number(e.volume_usd || 0)
+      volume_usd: Number(e.volume_usd || 0),
+      price_usd: e.price_usd
     }))
     .filter(e => e.volume_usd > 0)
     .sort((a, b) => b.volume_usd - a.volume_usd);
 
+    console.log(exchanges)
   tbodyEx.innerHTML = exWithVol.map((e, i) => `
     <tr>
       <td>${i + 1}</td>
       <td>${e.name}</td>
       <td>${e.pairs}</td>
-      <td>${e.pairs}</td>
+      <td>${e.price_usd}</td>
       <td>${formatUSD(e.volume_usd)}</td>
     </tr>
   `).join("");
